@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">XPlayer</string>
+
+    <!-- 底部导航栏（复刻 FlClash 安卓端） -->
+    <string name="nav_home">首页</string>
+    <string name="nav_videos">视频</string>
+    <string name="nav_folders">文件夹</string>
+    <string name="nav_settings">设置</string>
+
+    <!-- 首页 -->
+    <string name="home_continue_watching">继续观看</string>
+    <string name="home_recent_played">最近播放</string>
+    <string name="home_network_stream">网络直链播放</string>
+    <string name="home_network_stream_hint">输入直链 URL (HTTP / HTTPS / HLS / MP4 / MKV)</string>
+    <string name="home_play_now">立即播放</string>
+    <string name="home_history">最近直链历史</string>
+    <string name="home_stream_empty">暂无直链历史记录</string>
+    <string name="home_codec_check">本机硬件解码体检</string>
+    <string name="home_codec_check_desc">检测芯片硬解能力与杜比视界 / HDR 支持情况</string>
+    <string name="home_storage_v2_title">网络存储挂载（V2.0 预留）</string>
+    <string name="home_storage_v2_desc">WebDAV / SMB / Alist / Emby / Jellyfin 敬请期待</string>
+    <string name="home_no_recent">暂无最近播放的视频</string>
+    <string name="home_remaining_time">剩余 %s</string>
+
+    <!-- 视频页 -->
+    <string name="videos_search_hint">搜索本地视频…</string>
+    <string name="videos_empty">未找到本地视频</string>
+    <string name="videos_scan_now">扫描本地存储</string>
+    <string name="videos_sort_by">排序方式</string>
+    <string name="videos_sort_date">添加时间</string>
+    <string name="videos_sort_name">文件名</string>
+    <string name="videos_sort_size">文件大小</string>
+    <string name="videos_sort_duration">视频时长</string>
+    <string name="videos_view_list">列表视图</string>
+    <string name="videos_view_grid">网格视图</string>
+    <string name="videos_refreshing">正在扫描视频…</string>
+
+    <!-- 文件夹页 -->
+    <string name="folders_empty">未找到包含视频的文件夹</string>
+    <string name="folders_count">%1$d 个视频 • %2$s</string>
+    <string name="folders_blacklist">屏蔽此目录</string>
+    <string name="folders_blacklist_confirm">确定屏蔽文件夹「%s」？该目录下的视频将不再出现在媒体库中。</string>
+    <string name="folders_blacklist_manage">管理已屏蔽目录</string>
+    <string name="folders_unhide">取消屏蔽</string>
+    <string name="folders_no_blacklisted">暂无已屏蔽的目录</string>
+
+    <!-- 视频详情与文件操作 -->
+    <string name="video_details">视频详细信息</string>
+    <string name="video_path">文件路径</string>
+    <string name="video_resolution">分辨率</string>
+    <string name="video_duration">时长</string>
+    <string name="video_size">大小</string>
+    <string name="video_codec">视频编码</string>
+    <string name="video_hdr">HDR 类型</string>
+    <string name="video_action_rename">重命名</string>
+    <string name="video_action_delete">删除视频</string>
+    <string name="video_delete_confirm">确定永久删除文件「%s」？该操作无法恢复。</string>
+    <string name="action_confirm">确定</string>
+    <string name="action_cancel">取消</string>
+
+    <!-- 播放页与播控覆盖层 -->
+    <string name="player_kernel_media3">Media3</string>
+    <string name="player_kernel_mpv">libmpv</string>
+    <string name="player_aspect_fit">适应屏幕</string>
+    <string name="player_aspect_crop">裁剪填满（消除黑边）</string>
+    <string name="player_aspect_stretch">拉伸填满</string>
+    <string name="player_aspect_16_9">16:9</string>
+    <string name="player_aspect_4_3">4:3</string>
+    <string name="player_aspect_original">原始比例</string>
+    <string name="player_locked">触控手势已锁定</string>
+    <string name="player_unlocked">触控手势已解锁</string>
+    <string name="player_speed">播放倍速</string>
+    <string name="player_screenshot_saved">截图已保存至 Pictures/XPlayer</string>
+    <string name="player_screenshot_failed">截图失败</string>
+    <string name="player_tracks_title">音轨与字幕选择</string>
+    <string name="player_audio_tracks">音轨列表</string>
+    <string name="player_subtitle_tracks">字幕列表</string>
+    <string name="player_track_none">关闭</string>
+    <string name="player_track_import_sub">导入外部字幕…</string>
+    <string name="player_sub_sync">字幕时间轴同步</string>
+    <string name="player_sub_sync_zero">归零 (0ms)</string>
+    <string name="player_sub_sync_format">偏移量：%+d ms</string>
+    <string name="player_switch_kernel">内核热切换（当前 %s）</string>
+    <string name="player_resume_toast">已恢复至 %s 续播</string>
+    <string name="player_restart_from_beginning">从头播放</string>
+    <string name="player_pip_desc">画中画模式</string>
+    <string name="player_bg_audio">后台纯音频播放</string>
+    <string name="player_auto_play_next">自动连播下一集</string>
+
+    <!-- 设置体系（复刻 FlClash 风格） -->
+    <string name="settings_title">设置</string>
+    <string name="settings_cat_appearance">外观与主题</string>
+    <string name="settings_cat_engine">内核与解码</string>
+    <string name="settings_cat_gestures">手势与交互</string>
+    <string name="settings_cat_playback">播放与字幕</string>
+    <string name="settings_cat_mpv_lab">mpv 实验室</string>
+    <string name="settings_cat_scanner">媒体扫描</string>
+    <string name="settings_cat_about">关于与信息</string>
+
+    <!-- 外观设置 -->
+    <string name="settings_dynamic_color">动态取色（Monet）</string>
+    <string name="settings_dynamic_color_desc">跟随系统壁纸色调自动取色（Android 12+）</string>
+    <string name="settings_dark_mode">深色模式</string>
+    <string name="settings_dark_mode_system">跟随系统</string>
+    <string name="settings_dark_mode_light">浅色模式</string>
+    <string name="settings_dark_mode_dark">深色模式</string>
+    <string name="settings_dark_mode_amoled">纯黑 AMOLED 模式</string>
+    <string name="settings_theme_seed">主题种子色</string>
+
+    <!-- 内核与解码设置 -->
+    <string name="settings_engine_policy">默认内核策略</string>
+    <string name="settings_engine_policy_media3_first">Media3 优先（智能路由）</string>
+    <string name="settings_engine_policy_force_media3">强制锁定 Media3</string>
+    <string name="settings_engine_policy_force_mpv">强制锁定 libmpv</string>
+    <string name="settings_auto_switch_ass">ASS 特效字幕自动切 mpv</string>
+    <string name="settings_auto_switch_ass_desc">检测到内封/外挂 ASS/SSA 字幕时自动切换至 libmpv 渲染特效</string>
+    <string name="settings_frame_rate_matching">屏幕刷新率与视频帧率匹配</string>
+    <string name="settings_frame_rate_matching_desc">消除 24fps 电影在 120Hz 屏幕上的微卡顿（Android 11+）</string>
+    <string name="settings_mpv_hwdec">mpv 硬件解码策略</string>
+    <string name="settings_mpv_hwdec_mediacodec">mediacodec（零拷贝硬件直出，功耗最低）</string>
+    <string name="settings_mpv_hwdec_copy">mediacodec-copy（拷回内存，开启着色器必须）</string>
+    <string name="settings_mpv_hwdec_no">软件解码（多线程 CPU）</string>
+
+    <!-- 手势设置 -->
+    <string name="settings_gesture_left_vert">左侧垂直滑动</string>
+    <string name="settings_gesture_right_vert">右侧垂直滑动</string>
+    <string name="settings_gesture_action_brightness">调节屏幕亮度</string>
+    <string name="settings_gesture_action_volume">调节媒体音量</string>
+    <string name="settings_gesture_action_none">禁用</string>
+    <string name="settings_volume_boost">音量增强（最高 200%）</string>
+    <string name="settings_volume_boost_desc">音量超出 100% 后触发软件增益</string>
+    <string name="settings_horizontal_swipe">水平滑动快进/快退</string>
+    <string name="settings_seek_duration">满屏滑动跳转时长跨度</string>
+    <string name="settings_seek_exact">精确帧定位（Seek 精准度）</string>
+    <string name="settings_double_tap_seek">双击快进/快退步长</string>
+    <string name="settings_long_press_speed">长按倍速</string>
+    <string name="settings_long_press_slide">长按后左右滑动无级调速</string>
+    <string name="settings_pinch_zoom">双指画面缩放与平移</string>
+    <string name="settings_edge_deadzone">屏幕边缘防误触死区</string>
+    <string name="settings_reset_gestures">恢复默认手势设置</string>
+
+    <!-- 播放与字幕设置 -->
+    <string name="settings_default_speed">默认启动倍速</string>
+    <string name="settings_auto_play_next_desc">播放完毕后自动连播同目录下下一视频</string>
+    <string name="settings_bg_behavior">应用切入后台行为</string>
+    <string name="settings_bg_pause">自动暂停播放</string>
+    <string name="settings_bg_pip">自动进入画中画（PiP）</string>
+    <string name="settings_bg_audio">继续输出后台纯音频</string>
+    <string name="settings_sub_font_size">字幕字号缩放</string>
+    <string name="settings_sub_color">字幕文字颜色</string>
+    <string name="settings_sub_override_ass">强制覆盖 ASS 样式</string>
+    <string name="settings_sub_override_ass_desc">开启后自定义字体与字号将覆盖 ASS 原生特效排版</string>
+
+    <!-- mpv 实验室 -->
+    <string name="mpv_lab_title">mpv 实验室</string>
+    <string name="mpv_conf_editor">mpv.conf 内置编辑器</string>
+    <string name="mpv_conf_editor_desc">直接编辑 libmpv 底层高级启动参数</string>
+    <string name="mpv_conf_save">保存配置并应用</string>
+    <string name="mpv_conf_reset">清空并恢复默认</string>
+    <string name="mpv_conf_preset_deband">插入：去色带参数 (deband=yes)</string>
+    <string name="mpv_conf_preset_gpu_next">插入：启用 vo=gpu-next</string>
+    <string name="mpv_conf_preset_hdr">插入：HDR 色调映射优化</string>
+    <string name="mpv_shaders_title">GLSL 着色器管理</string>
+    <string name="mpv_shaders_desc">导入并管理外部 GLSL 着色器（如 Anime4K）</string>
+    <string name="mpv_shaders_import">导入 .glsl 着色器文件</string>
+    <string name="mpv_shaders_enable_all">开启着色器执行管线</string>
+    <string name="mpv_shaders_empty">暂未导入任何外部着色器</string>
+
+    <!-- 芯片解码体检 -->
+    <string name="codec_inspector_title">本机硬件解码体检</string>
+    <string name="codec_device_info">设备型号与芯片信息</string>
+    <string name="codec_support_h264">H.264 / AVC 硬件解码</string>
+    <string name="codec_support_hevc">HEVC / H.265 (Main 10 10-bit)</string>
+    <string name="codec_support_av1">AV1 硬件解码</string>
+    <string name="codec_support_vp9">VP9 Profile 0/2 硬件解码</string>
+    <string name="codec_support_dv">Dolby Vision 杜比视界 (Profile)</string>
+    <string name="codec_support_hdr10">HDR10 / HDR10+ 静态/动态元数据</string>
+    <string name="codec_hw_decoders">系统已注册硬件解码器实例</string>
+
+    <!-- 权限申请引导 -->
+    <string name="permission_storage_title">需要所有文件访问权限</string>
+    <string name="permission_storage_desc">XPlayer 是一款本地高清媒体播放器，需要访问手机存储以扫描、建立媒体库并流畅播放您的视频与外挂字幕文件。</string>
+    <string name="permission_grant">立即授权访问</string>
+</resources>

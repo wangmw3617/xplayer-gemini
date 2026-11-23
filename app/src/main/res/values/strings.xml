@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">XPlayer</string>
+
+    <!-- Navigation Tabs (FlClash Replica) -->
+    <string name="nav_home">Home</string>
+    <string name="nav_videos">Videos</string>
+    <string name="nav_folders">Folders</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Home Screen -->
+    <string name="home_continue_watching">Continue Watching</string>
+    <string name="home_recent_played">Recently Played</string>
+    <string name="home_network_stream">Network Stream</string>
+    <string name="home_network_stream_hint">Enter stream URL (HTTP / HTTPS / HLS / MP4 / MKV)</string>
+    <string name="home_play_now">Play Now</string>
+    <string name="home_history">Recent Streams</string>
+    <string name="home_stream_empty">No stream history yet</string>
+    <string name="home_codec_check">Hardware Codec Diagnostic</string>
+    <string name="home_codec_check_desc">Inspect SoC hardware decoding capabilities and HDR support</string>
+    <string name="home_storage_v2_title">Network Storage (V2.0)</string>
+    <string name="home_storage_v2_desc">WebDAV / SMB / Alist / Emby / Jellyfin integration coming soon</string>
+    <string name="home_no_recent">No recently watched videos</string>
+    <string name="home_remaining_time">Remaining: %s</string>
+
+    <!-- Videos Screen -->
+    <string name="videos_search_hint">Search videos by name…</string>
+    <string name="videos_empty">No videos found</string>
+    <string name="videos_scan_now">Scan Local Storage</string>
+    <string name="videos_sort_by">Sort By</string>
+    <string name="videos_sort_date">Date Added</string>
+    <string name="videos_sort_name">File Name</string>
+    <string name="videos_sort_size">File Size</string>
+    <string name="videos_sort_duration">Duration</string>
+    <string name="videos_view_list">List View</string>
+    <string name="videos_view_grid">Grid View</string>
+    <string name="videos_refreshing">Scanning videos…</string>
+
+    <!-- Folders Screen -->
+    <string name="folders_empty">No video folders found</string>
+    <string name="folders_count">%1$d videos • %2$s</string>
+    <string name="folders_blacklist">Hide Folder</string>
+    <string name="folders_blacklist_confirm">Hide folder \"%s\"? Its videos won\'t appear in the media library.</string>
+    <string name="folders_blacklist_manage">Manage Hidden Folders</string>
+    <string name="folders_unhide">Unhide</string>
+    <string name="folders_no_blacklisted">No hidden folders</string>
+
+    <!-- Video Details & Actions -->
+    <string name="video_details">Video Info</string>
+    <string name="video_path">File Path</string>
+    <string name="video_resolution">Resolution</string>
+    <string name="video_duration">Duration</string>
+    <string name="video_size">Size</string>
+    <string name="video_codec">Video Codec</string>
+    <string name="video_hdr">HDR Type</string>
+    <string name="video_action_rename">Rename</string>
+    <string name="video_action_delete">Delete</string>
+    <string name="video_delete_confirm">Are you sure you want to delete \"%s\"? This file will be permanently removed.</string>
+    <string name="action_confirm">Confirm</string>
+    <string name="action_cancel">Cancel</string>
+
+    <!-- Player Controls & Overlay -->
+    <string name="player_kernel_media3">Media3</string>
+    <string name="player_kernel_mpv">libmpv</string>
+    <string name="player_aspect_fit">Fit Screen</string>
+    <string name="player_aspect_crop">Crop &amp; Fill</string>
+    <string name="player_aspect_stretch">Stretch</string>
+    <string name="player_aspect_16_9">16:9</string>
+    <string name="player_aspect_4_3">4:3</string>
+    <string name="player_aspect_original">Original</string>
+    <string name="player_locked">Touch Controls Locked</string>
+    <string name="player_unlocked">Touch Controls Unlocked</string>
+    <string name="player_speed">Playback Speed</string>
+    <string name="player_screenshot_saved">Screenshot saved to Pictures/XPlayer</string>
+    <string name="player_screenshot_failed">Failed to capture screenshot</string>
+    <string name="player_tracks_title">Audio &amp; Subtitle Tracks</string>
+    <string name="player_audio_tracks">Audio Tracks</string>
+    <string name="player_subtitle_tracks">Subtitle Tracks</string>
+    <string name="player_track_none">Off</string>
+    <string name="player_track_import_sub">Import External Subtitle…</string>
+    <string name="player_sub_sync">Subtitle Sync</string>
+    <string name="player_sub_sync_zero">Reset (0ms)</string>
+    <string name="player_sub_sync_format">Offset: %+d ms</string>
+    <string name="player_switch_kernel">Switch Engine (%s)</string>
+    <string name="player_resume_toast">Resumed from %s</string>
+    <string name="player_restart_from_beginning">Play from Start</string>
+    <string name="player_pip_desc">Picture-in-Picture Mode</string>
+    <string name="player_bg_audio">Background Audio</string>
+    <string name="player_auto_play_next">Auto play next</string>
+
+    <!-- Settings (FlClash Style) -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_cat_appearance">Appearance &amp; Theme</string>
+    <string name="settings_cat_engine">Engine &amp; Decoding</string>
+    <string name="settings_cat_gestures">Gestures &amp; Interaction</string>
+    <string name="settings_cat_playback">Playback &amp; Subtitles</string>
+    <string name="settings_cat_mpv_lab">mpv Laboratory</string>
+    <string name="settings_cat_scanner">Media Scanner</string>
+    <string name="settings_cat_about">About &amp; Info</string>
+
+    <!-- Settings Items: Appearance -->
+    <string name="settings_dynamic_color">Dynamic Color (Monet)</string>
+    <string name="settings_dynamic_color_desc">Match accent colors with system wallpaper (Android 12+)</string>
+    <string name="settings_dark_mode">Dark Mode</string>
+    <string name="settings_dark_mode_system">Follow System</string>
+    <string name="settings_dark_mode_light">Light Mode</string>
+    <string name="settings_dark_mode_dark">Dark Mode</string>
+    <string name="settings_dark_mode_amoled">Pure Black (AMOLED)</string>
+    <string name="settings_theme_seed">Accent Theme Color</string>
+
+    <!-- Settings Items: Engine -->
+    <string name="settings_engine_policy">Default Engine Policy</string>
+    <string name="settings_engine_policy_media3_first">Media3 First (Smart Router)</string>
+    <string name="settings_engine_policy_force_media3">Force Media3</string>
+    <string name="settings_engine_policy_force_mpv">Force libmpv</string>
+    <string name="settings_auto_switch_ass">Auto Switch on ASS Subtitles</string>
+    <string name="settings_auto_switch_ass_desc">Route to libmpv when ASS/SSA subtitles are detected</string>
+    <string name="settings_frame_rate_matching">Match Display Refresh Rate</string>
+    <string name="settings_frame_rate_matching_desc">Match screen refresh rate with video fps (Android 11+)</string>
+    <string name="settings_mpv_hwdec">mpv Hardware Decoding</string>
+    <string name="settings_mpv_hwdec_mediacodec">mediacodec (Zero copy, lowest power)</string>
+    <string name="settings_mpv_hwdec_copy">mediacodec-copy (Required for GLSL shaders)</string>
+    <string name="settings_mpv_hwdec_no">Software Decoding (CPU)</string>
+
+    <!-- Settings Items: Gestures -->
+    <string name="settings_gesture_left_vert">Left Vertical Swipe</string>
+    <string name="settings_gesture_right_vert">Right Vertical Swipe</string>
+    <string name="settings_gesture_action_brightness">Screen Brightness</string>
+    <string name="settings_gesture_action_volume">Media Volume</string>
+    <string name="settings_gesture_action_none">Disabled</string>
+    <string name="settings_volume_boost">Volume Boost (Up to 200%)</string>
+    <string name="settings_volume_boost_desc">Software audio gain when volume exceeds 100%</string>
+    <string name="settings_horizontal_swipe">Horizontal Swipe to Seek</string>
+    <string name="settings_seek_duration">Swipe Full Screen Seek Span</string>
+    <string name="settings_seek_exact">Precise Frame Seek</string>
+    <string name="settings_double_tap_seek">Double Tap Seek Step</string>
+    <string name="settings_long_press_speed">Long Press Playback Speed</string>
+    <string name="settings_long_press_slide">Slide to Adjust Speed While Long Pressing</string>
+    <string name="settings_pinch_zoom">Pinch to Zoom &amp; Pan</string>
+    <string name="settings_edge_deadzone">Edge Touch Deadzone</string>
+    <string name="settings_reset_gestures">Reset Gestures to Default</string>
+
+    <!-- Settings Items: Playback & Subtitles -->
+    <string name="settings_default_speed">Default Playback Speed</string>
+    <string name="settings_auto_play_next_desc">Automatically play the next video in the folder</string>
+    <string name="settings_bg_behavior">App Switch Behavior</string>
+    <string name="settings_bg_pause">Pause Playback</string>
+    <string name="settings_bg_pip">Enter Picture-in-Picture</string>
+    <string name="settings_bg_audio">Continue Audio in Background</string>
+    <string name="settings_sub_font_size">Subtitle Font Size</string>
+    <string name="settings_sub_color">Subtitle Color</string>
+    <string name="settings_sub_override_ass">Force Override ASS Style</string>
+    <string name="settings_sub_override_ass_desc">Apply custom font styles to ASS/SSA subtitles</string>
+
+    <!-- mpv Laboratory -->
+    <string name="mpv_lab_title">mpv Laboratory</string>
+    <string name="mpv_conf_editor">mpv.conf Editor</string>
+    <string name="mpv_conf_editor_desc">Edit advanced configuration parameters for libmpv</string>
+    <string name="mpv_conf_save">Save Configuration</string>
+    <string name="mpv_conf_reset">Reset to Default</string>
+    <string name="mpv_conf_preset_deband">Insert: Deband (Anti-color banding)</string>
+    <string name="mpv_conf_preset_gpu_next">Insert: vo=gpu-next</string>
+    <string name="mpv_conf_preset_hdr">Insert: HDR Tone Mapping Optimization</string>
+    <string name="mpv_shaders_title">GLSL Custom Shaders</string>
+    <string name="mpv_shaders_desc">Manage external GLSL shaders such as Anime4K</string>
+    <string name="mpv_shaders_import">Import .glsl Shader</string>
+    <string name="mpv_shaders_enable_all">Enable Shaders Pipeline</string>
+    <string name="mpv_shaders_empty">No custom shaders imported yet</string>
+
+    <!-- Codec Inspector -->
+    <string name="codec_inspector_title">Hardware Codec Diagnostic</string>
+    <string name="codec_device_info">Device Model &amp; SoC</string>
+    <string name="codec_support_h264">H.264 / AVC</string>
+    <string name="codec_support_hevc">HEVC / H.265 (Main 10)</string>
+    <string name="codec_support_av1">AV1</string>
+    <string name="codec_support_vp9">VP9 Profile 0/2</string>
+    <string name="codec_support_dv">Dolby Vision (Profiles)</string>
+    <string name="codec_support_hdr10">HDR10 / HDR10+</string>
+    <string name="codec_hw_decoders">Hardware Decoder Instances</string>
+
+    <!-- Permissions -->
+    <string name="permission_storage_title">Storage Permission Required</string>
+    <string name="permission_storage_desc">XPlayer requires storage access to scan, display and play local video files.</string>
+    <string name="permission_grant">Grant Permission</string>
+</resources>
