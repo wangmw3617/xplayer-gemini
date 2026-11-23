@@ -2,6 +2,7 @@ package com.xplayer.app.player.codec
 
 import android.media.MediaCodecInfo
 import android.media.MediaCodecList
+import android.media.MediaFormat
 import android.os.Build
 
 data class CodecCapability(
@@ -54,11 +55,11 @@ object CodecInspector {
 
                 caps.profileLevels?.forEach { pl ->
                     when (mime) {
-                        MediaCodecInfo.CodecCapabilities.MIMETYPE_VIDEO_DOLBY_VISION -> {
+                        MediaFormat.MIMETYPE_VIDEO_DOLBY_VISION -> {
                             dvSupported = true
                             profileNames.add("Profile ${pl.profile}")
                         }
-                        MediaCodecInfo.CodecCapabilities.MIMETYPE_VIDEO_HEVC -> {
+                        MediaFormat.MIMETYPE_VIDEO_HEVC -> {
                             if (pl.profile == MediaCodecInfo.CodecProfileLevel.HEVCProfileMain10 ||
                                 pl.profile == MediaCodecInfo.CodecProfileLevel.HEVCProfileMain10HDR10 ||
                                 pl.profile == MediaCodecInfo.CodecProfileLevel.HEVCProfileMain10HDR10Plus
@@ -72,9 +73,9 @@ object CodecInspector {
                 }
 
                 when (mime) {
-                    MediaCodecInfo.CodecCapabilities.MIMETYPE_VIDEO_AVC -> h264Supported = true
-                    MediaCodecInfo.CodecCapabilities.MIMETYPE_VIDEO_AV1 -> av1Supported = true
-                    MediaCodecInfo.CodecCapabilities.MIMETYPE_VIDEO_VP9 -> vp9Supported = true
+                    MediaFormat.MIMETYPE_VIDEO_AVC -> h264Supported = true
+                    MediaFormat.MIMETYPE_VIDEO_AV1 -> av1Supported = true
+                    MediaFormat.MIMETYPE_VIDEO_VP9 -> vp9Supported = true
                 }
 
                 if (isHw && mime.startsWith("video/")) {
@@ -107,7 +108,7 @@ object CodecInspector {
             supportsDolbyVision = dvSupported,
             dolbyVisionProfiles = dvProfiles.distinct(),
             supportsHdr10 = hdr10Supported,
-            hardwareDecoders = hwDecoders.distinctBy { it.codecName }
+            hardwareDecoders = hwDecoders.distinctBy { it.codecName to it.mimeType }
         )
     }
 }

@@ -54,7 +54,7 @@ class MpvEngineImpl(
 
     private fun initMpv() {
         runCatching {
-            val instance = MPVLib.create(context.applicationContext)
+            val instance = MPVLib.create(context.applicationContext) ?: error("Failed to create MPVLib")
             mpv = instance
             applyMpvOptions(instance)
             instance.init()
@@ -138,7 +138,6 @@ class MpvEngineImpl(
                 it.copy(
                     isPlaying = true,
                     currentPositionMs = startPositionMs,
-                    activeMediaSource = source,
                     error = null,
                     isBuffering = false
                 )
@@ -166,24 +165,25 @@ class MpvEngineImpl(
         _state.update { it.copy(currentPositionMs = positionMs) }
     }
 
-    override fun setPlaybackSpeed(speed: Float) {
+    override fun setSpeed(speed: Float) {
         mpv?.setPropertyDouble("speed", speed.toDouble())
-        _state.update { it.copy(playbackSpeed = speed) }
+        _state.update { it.copy(speed = speed) }
     }
 
-    override fun selectAudioTrack(trackId: String) {
-        val aid = if (trackId == "auto") "auto" else trackId
+    override fun selectAudioTrack(id: String?) {
+        val aid = id ?: "no"
         mpv?.setPropertyString("aid", aid)
-        _state.update { it.copy(selectedAudioTrackId = trackId) }
+        _state.update { it.copy(selectedAudioTrackId = id) }
     }
 
-    override fun selectSubtitleTrack(trackId: String?) {
-        val sid = trackId ?: "no"
+    override fun selectSubtitleTrack(id: String?) {
+        val sid = id ?: "no"
         mpv?.setPropertyString("sid", sid)
-        _state.update { it.copy(selectedSubtitleTrackId = trackId) }
+        _state.update { it.copy(selectedSubtitleTrackId = id) }
     }
 
-    override fun addExternalSubtitle(path: String) {
+    override fun addExternalSubtitle(uri: Uri, name: String) {
+        val path = uri.path ?: uri.toString()
         mpv?.command(arrayOf("sub-add", path, "select"))
         refreshTracks()
     }
@@ -191,11 +191,11 @@ class MpvEngineImpl(
     override fun setSubtitleDelay(delayMs: Long) {
         val delaySec = delayMs / 1000.0
         mpv?.setPropertyDouble("sub-delay", delaySec)
+        _state.update { it.copy(subtitleDelayMs = delayMs) }
     }
 
-    override fun setSubtitleFontScale(scale: Float) {
-        val fontScale = (scale / 100.0).coerceIn(0.5, 3.0)
-        mpv?.setPropertyDouble("sub-scale", fontScale)
+    override fun setSubtitleStyle(style: SubtitlePrefs) {
+        mpv?.setPropertyDouble("sub-scale", style.fontSizeScale.toDouble().coerceIn(0.5, 3.0))
     }
 
     override fun setAspectRatio(mode: AspectRatioMode) {
@@ -208,14 +208,7 @@ class MpvEngineImpl(
         _state.update { it.copy(aspectRatioMode = mode) }
     }
 
-    override fun applySubtitleStyle(prefs: SubtitlePrefs) {
-        val delaySec = prefs.delayMs / 1000.0
-        mpv?.setPropertyDouble("sub-delay", delaySec)
-        val fontScale = (prefs.fontSizeSp / 20.0).coerceIn(0.5, 3.0)
-        mpv?.setPropertyDouble("sub-scale", fontScale)
-    }
-
-    override fun captureFrame(onBitmapCaptured: (Bitmap?) -> Unit) {
+    override fun captureScreenshot(callback: (Bitmap?) -> Unit) {
         val sv = attachedSurfaceView
         if (sv != null && sv.holder.surface.isValid) {
             val bitmap = Bitmap.createBitmap(sv.width, sv.height, Bitmap.Config.ARGB_8888)
@@ -225,18 +218,18 @@ class MpvEngineImpl(
                     bitmap,
                     { result ->
                         if (result == PixelCopy.SUCCESS) {
-                            onBitmapCaptured(bitmap)
+                            callback(bitmap)
                         } else {
-                            onBitmapCaptured(null)
+                            callback(null)
                         }
                     },
                     Handler(Looper.getMainLooper())
                 )
             } catch (e: Exception) {
-                onBitmapCaptured(null)
+                callback(null)
             }
         } else {
-            onBitmapCaptured(null)
+            callback(null)
         }
     }
 
