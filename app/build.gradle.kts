@@ -1,18 +1,27 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
 }
 
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+}
+
 android {
     namespace = "com.xplayer.app"
-    compileSdk = 36
+    compileSdk {
+        version = release(36)
+    }
 
     defaultConfig {
         applicationId = "com.xplayer.app"
-        minSdk = 29
-        targetSdk = 35
+        minSdk {
+            version = release(29)
+        }
+        targetSdk {
+            version = release(36)
+        }
         versionCode = 1
         versionName = "1.0.0"
 
@@ -52,31 +61,42 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
-        freeCompilerArgs = listOf(
-            "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
-            "-opt-in=androidx.media3.common.util.UnstableApi",
-            "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
-        )
-    }
-
     buildFeatures {
         compose = true
         buildConfig = true
     }
 
     packaging {
+        jniLibs {
+            useLegacyPackaging = true
+            pickFirsts += setOf("**/libc++_shared.so")
+        }
         resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-            excludes += "/META-INF/INDEX.LIST"
-            excludes += "/META-INF/io.netty.versions.properties"
+            excludes += setOf(
+                "/META-INF/{AL2.0,LGPL2.1}",
+                "/META-INF/INDEX.LIST",
+                "/META-INF/DEPENDENCIES",
+                "/META-INF/LICENSE*",
+                "/META-INF/NOTICE*",
+                "/META-INF/*.kotlin_module"
+            )
         }
     }
 
     lint {
         abortOnError = false
         checkReleaseBuilds = false
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+        freeCompilerArgs.addAll(
+            "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
+            "-opt-in=androidx.media3.common.util.UnstableApi",
+            "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
+        )
     }
 }
 
@@ -122,5 +142,5 @@ dependencies {
     implementation(libs.nextlib.media3ext)
 
     // libmpv for Android
-    implementation(libs.mpv.android.lib)
+    implementation(libs.libmpv)
 }

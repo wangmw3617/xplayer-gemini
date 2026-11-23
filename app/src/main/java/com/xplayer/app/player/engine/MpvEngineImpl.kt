@@ -16,7 +16,7 @@ import com.xplayer.app.data.source.MediaSource
 import com.xplayer.app.player.model.AspectRatioMode
 import com.xplayer.app.player.model.PlayerUiState
 import com.xplayer.app.player.model.TrackInfo
-import is.xyz.mpv.MPVLib
+import dev.jdtech.mpv.MPVLib
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -42,6 +42,7 @@ class MpvEngineImpl(
     private val _state = MutableStateFlow(PlayerUiState(activeEngine = KernelType.MPV))
     override val state: StateFlow<PlayerUiState> = _state.asStateFlow()
 
+    private var mpv: MPVLib? = null
     private var attachedSurfaceView: SurfaceView? = null
     private var progressJob: Job? = null
     private var isInitialized = false
@@ -53,10 +54,12 @@ class MpvEngineImpl(
 
     private fun initMpv() {
         runCatching {
-            MPVLib.create(context.applicationContext)
-            applyMpvOptions()
-            MPVLib.init()
-            MPVLib.addObserver(this)
+            val instance = MPVLib.create(context.applicationContext)
+            mpv = instance
+            applyMpvOptions(instance)
+            instance.init()
+            observeProperties(instance)
+            instance.addObserver(this)
             isInitialized = true
         }.onFailure { e ->
             e.printStackTrace()
@@ -65,19 +68,19 @@ class MpvEngineImpl(
         }
     }
 
-    private fun applyMpvOptions() {
+    private fun applyMpvOptions(instance: MPVLib) {
         // HWDEC
         val hwdec = if (activeShaders.isNotEmpty()) {
             "mediacodec-copy"
         } else {
             enginePrefs.mpvHwdec.value
         }
-        MPVLib.setOptionString("hwdec", hwdec)
-        MPVLib.setOptionString("vo", "gpu")
-        MPVLib.setOptionString("gpu-context", "android")
-        MPVLib.setOptionString("sub-auto", "all")
-        MPVLib.setOptionString("sub-font-provider", "none")
-        MPVLib.setOptionString("keep-open", "yes")
+        instance.setOptionString("hwdec", hwdec)
+        instance.setOptionString("vo", "gpu")
+        instance.setOptionString("gpu-context", "android")
+        instance.setOptionString("sub-auto", "all")
+        instance.setOptionString("sub-font-provider", "none")
+        instance.setOptionString("keep-open", "yes")
 
         // Custom mpv.conf parsing if enabled
         if (enginePrefs.customMpvConfEnabled && enginePrefs.customMpvConf.isNotBlank()) {
@@ -86,7 +89,7 @@ class MpvEngineImpl(
                 if (trimmed.isNotEmpty() && !trimmed.startsWith("#") && trimmed.contains("=")) {
                     val key = trimmed.substringBefore("=").trim()
                     val value = trimmed.substringAfter("=").trim()
-                    MPVLib.setOptionString(key, value)
+                    instance.setOptionString(key, value)
                 }
             }
         }
@@ -96,9 +99,19 @@ class MpvEngineImpl(
             val shaderList = activeShaders.filter { it.enabled }.map { it.filePath }
             if (shaderList.isNotEmpty()) {
                 val shadersJoined = shaderList.joinToString(":")
-                MPVLib.setOptionString("glsl-shaders", shadersJoined)
+                instance.setOptionString("glsl-shaders", shadersJoined)
             }
         }
+    }
+
+    private fun observeProperties(instance: MPVLib) {
+        instance.observeProperty("time-pos", MPVLib.MpvFormat.MPV_FORMAT_DOUBLE)
+        instance.observeProperty("duration", MPVLib.MpvFormat.MPV_FORMAT_DOUBLE)
+        instance.observeProperty("pause", MPVLib.MpvFormat.MPV_FORMAT_FLAG)
+        instance.observeProperty("track-list", MPVLib.MpvFormat.MPV_FORMAT_NONE)
+        instance.observeProperty("video-params/w", MPVLib.MpvFormat.MPV_FORMAT_INT64)
+        instance.observeProperty("video-params/h", MPVLib.MpvFormat.MPV_FORMAT_INT64)
+        instance.observeProperty("eof-reached", MPVLib.MpvFormat.MPV_FORMAT_FLAG)
     }
 
     override fun prepare(source: MediaSource, startPositionMs: Long) {
@@ -106,133 +119,124 @@ class MpvEngineImpl(
         pendingStartPositionMs = startPositionMs
 
         runCatching {
-            MPVLib.command(arrayOf("loadfile", source.playbackUri))
+            mpv?.command(arrayOf("loadfile", source.playbackUri))
 
             if (startPositionMs > 0) {
                 val secs = startPositionMs / 1000.0
-                MPVLib.setPropertyDouble("playback-time", secs)
+                mpv?.setPropertyDouble("playback-time", secs)
             }
 
             // Auto-mount external subtitles
             if (source is MediaSource.LocalFileSource) {
                 source.externalSubtitles.forEach { sub ->
-                    MPVLib.command(arrayOf("sub-add", sub.path, "auto"))
+                    mpv?.command(arrayOf("sub-add", sub.path, "auto"))
                 }
             }
 
-            MPVLib.setPropertyBoolean("pause", false)
+            mpv?.setPropertyBoolean("pause", false)
             _state.update {
                 it.copy(
                     isPlaying = true,
                     currentPositionMs = startPositionMs,
-                    error = null
+                    activeMediaSource = source,
+                    error = null,
+                    isBuffering = false
                 )
             }
             startProgressTracker()
         }.onFailure { e ->
-            e.printStackTrace()
             _state.update { it.copy(error = e.localizedMessage) }
+            onErrorFallback?.invoke(e.localizedMessage ?: "mpv prepare error")
         }
     }
 
     override fun play() {
-        if (!isInitialized) return
-        MPVLib.setPropertyBoolean("pause", false)
+        mpv?.setPropertyBoolean("pause", false)
         _state.update { it.copy(isPlaying = true) }
-        startProgressTracker()
     }
 
     override fun pause() {
-        if (!isInitialized) return
-        MPVLib.setPropertyBoolean("pause", true)
+        mpv?.setPropertyBoolean("pause", true)
         _state.update { it.copy(isPlaying = false) }
-        stopProgressTracker()
     }
 
     override fun seekTo(positionMs: Long) {
-        if (!isInitialized) return
         val seconds = positionMs / 1000.0
-        MPVLib.command(arrayOf("seek", seconds.toString(), "absolute"))
+        mpv?.command(arrayOf("seek", seconds.toString(), "absolute"))
         _state.update { it.copy(currentPositionMs = positionMs) }
     }
 
-    override fun setSpeed(speed: Float) {
-        if (!isInitialized) return
-        MPVLib.setPropertyDouble("speed", speed.toDouble())
-        _state.update { it.copy(speed = speed) }
+    override fun setPlaybackSpeed(speed: Float) {
+        mpv?.setPropertyDouble("speed", speed.toDouble())
+        _state.update { it.copy(playbackSpeed = speed) }
     }
 
-    override fun selectAudioTrack(id: String?) {
-        if (!isInitialized) return
-        val aid = id ?: "no"
-        MPVLib.setPropertyString("aid", aid)
-        _state.update { it.copy(selectedAudioTrackId = id) }
+    override fun selectAudioTrack(trackId: String) {
+        val aid = if (trackId == "auto") "auto" else trackId
+        mpv?.setPropertyString("aid", aid)
+        _state.update { it.copy(selectedAudioTrackId = trackId) }
     }
 
-    override fun selectSubtitleTrack(id: String?) {
-        if (!isInitialized) return
-        val sid = id ?: "no"
-        MPVLib.setPropertyString("sid", sid)
-        _state.update { it.copy(selectedSubtitleTrackId = id) }
+    override fun selectSubtitleTrack(trackId: String?) {
+        val sid = trackId ?: "no"
+        mpv?.setPropertyString("sid", sid)
+        _state.update { it.copy(selectedSubtitleTrackId = trackId) }
     }
 
-    override fun addExternalSubtitle(uri: Uri, name: String) {
-        if (!isInitialized) return
-        val path = uri.path ?: return
-        MPVLib.command(arrayOf("sub-add", path, "select"))
+    override fun addExternalSubtitle(path: String) {
+        mpv?.command(arrayOf("sub-add", path, "select"))
         refreshTracks()
     }
 
     override fun setSubtitleDelay(delayMs: Long) {
-        if (!isInitialized) return
         val delaySec = delayMs / 1000.0
-        MPVLib.setPropertyDouble("sub-delay", delaySec)
-        _state.update { it.copy(subtitleDelayMs = delayMs) }
+        mpv?.setPropertyDouble("sub-delay", delaySec)
     }
 
-    override fun setSubtitleStyle(style: SubtitlePrefs) {
-        if (!isInitialized) return
-        val fontScale = style.fontSizeScale.toDouble()
-        MPVLib.setPropertyDouble("sub-scale", fontScale)
+    override fun setSubtitleFontScale(scale: Float) {
+        val fontScale = (scale / 100.0).coerceIn(0.5, 3.0)
+        mpv?.setPropertyDouble("sub-scale", fontScale)
     }
 
     override fun setAspectRatio(mode: AspectRatioMode) {
-        if (!isInitialized) return
         when (mode) {
-            AspectRatioMode.RATIO_16_9 -> MPVLib.setPropertyDouble("video-aspect-override", 16.0 / 9.0)
-            AspectRatioMode.RATIO_4_3 -> MPVLib.setPropertyDouble("video-aspect-override", 4.0 / 3.0)
-            AspectRatioMode.ORIGINAL -> MPVLib.setPropertyDouble("video-aspect-override", -1.0)
-            else -> MPVLib.setPropertyDouble("video-aspect-override", -1.0)
+            AspectRatioMode.RATIO_16_9 -> mpv?.setPropertyDouble("video-aspect-override", 16.0 / 9.0)
+            AspectRatioMode.RATIO_4_3 -> mpv?.setPropertyDouble("video-aspect-override", 4.0 / 3.0)
+            AspectRatioMode.ORIGINAL -> mpv?.setPropertyDouble("video-aspect-override", -1.0)
+            else -> mpv?.setPropertyDouble("video-aspect-override", -1.0)
         }
         _state.update { it.copy(aspectRatioMode = mode) }
     }
 
-    override fun captureScreenshot(callback: (Bitmap?) -> Unit) {
-        val surfaceView = attachedSurfaceView
-        if (surfaceView == null || !surfaceView.holder.surface.isValid) {
-            callback(null)
-            return
-        }
+    override fun applySubtitleStyle(prefs: SubtitlePrefs) {
+        val delaySec = prefs.delayMs / 1000.0
+        mpv?.setPropertyDouble("sub-delay", delaySec)
+        val fontScale = (prefs.fontSizeSp / 20.0).coerceIn(0.5, 3.0)
+        mpv?.setPropertyDouble("sub-scale", fontScale)
+    }
 
-        val width = surfaceView.width.coerceAtLeast(1)
-        val height = surfaceView.height.coerceAtLeast(1)
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-
-        runCatching {
-            PixelCopy.request(
-                surfaceView,
-                bitmap,
-                { copyResult ->
-                    if (copyResult == PixelCopy.SUCCESS) {
-                        callback(bitmap)
-                    } else {
-                        callback(null)
-                    }
-                },
-                Handler(Looper.getMainLooper())
-            )
-        }.onFailure {
-            callback(null)
+    override fun captureFrame(onBitmapCaptured: (Bitmap?) -> Unit) {
+        val sv = attachedSurfaceView
+        if (sv != null && sv.holder.surface.isValid) {
+            val bitmap = Bitmap.createBitmap(sv.width, sv.height, Bitmap.Config.ARGB_8888)
+            try {
+                PixelCopy.request(
+                    sv,
+                    bitmap,
+                    { result ->
+                        if (result == PixelCopy.SUCCESS) {
+                            onBitmapCaptured(bitmap)
+                        } else {
+                            onBitmapCaptured(null)
+                        }
+                    },
+                    Handler(Looper.getMainLooper())
+                )
+            } catch (e: Exception) {
+                onBitmapCaptured(null)
+            }
+        } else {
+            onBitmapCaptured(null)
         }
     }
 
@@ -240,61 +244,56 @@ class MpvEngineImpl(
         attachedSurfaceView = surfaceView
         surfaceView.holder.addCallback(this)
         if (surfaceView.holder.surface.isValid) {
-            MPVLib.attachSurface(surfaceView.holder.surface)
+            mpv?.attachSurface(surfaceView.holder.surface)
         }
     }
 
     override fun detachSurfaceView() {
         attachedSurfaceView?.holder?.removeCallback(this)
         attachedSurfaceView = null
-        if (isInitialized) {
-            MPVLib.detachSurface()
-        }
+        mpv?.detachSurface()
     }
 
+    // SurfaceHolder.Callback
     override fun surfaceCreated(holder: SurfaceHolder) {
-        if (isInitialized) {
-            MPVLib.attachSurface(holder.surface)
-        }
+        mpv?.attachSurface(holder.surface)
     }
 
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
-        // Surface resized
+        runCatching { mpv?.setPropertyString("android-surface-size", "${width}x$height") }
     }
 
     override fun surfaceDestroyed(holder: SurfaceHolder) {
-        if (isInitialized) {
-            MPVLib.detachSurface()
-        }
+        mpv?.detachSurface()
     }
 
     // MPVLib.EventObserver callbacks
     override fun eventProperty(property: String) {
         when (property) {
             "time-pos" -> {
-                val posSec = MPVLib.getPropertyDouble("time-pos") ?: 0.0
+                val posSec = mpv?.getPropertyDouble("time-pos") ?: 0.0
                 _state.update { it.copy(currentPositionMs = (posSec * 1000).toLong()) }
             }
             "duration" -> {
-                val durSec = MPVLib.getPropertyDouble("duration") ?: 0.0
+                val durSec = mpv?.getPropertyDouble("duration") ?: 0.0
                 _state.update { it.copy(durationMs = (durSec * 1000).toLong()) }
             }
             "pause" -> {
-                val paused = MPVLib.getPropertyBoolean("pause") ?: false
+                val paused = mpv?.getPropertyBoolean("pause") ?: false
                 _state.update { it.copy(isPlaying = !paused) }
             }
             "track-list" -> {
                 refreshTracks()
             }
             "video-params/w", "video-params/h" -> {
-                val w = MPVLib.getPropertyInt("video-params/w") ?: 0
-                val h = MPVLib.getPropertyInt("video-params/h") ?: 0
+                val w = mpv?.getPropertyInt("video-params/w") ?: 0
+                val h = mpv?.getPropertyInt("video-params/h") ?: 0
                 if (w > 0 && h > 0) {
                     _state.update { it.copy(videoWidth = w, videoHeight = h) }
                 }
             }
             "eof-reached" -> {
-                val eof = MPVLib.getPropertyBoolean("eof-reached") ?: false
+                val eof = mpv?.getPropertyBoolean("eof-reached") ?: false
                 if (eof) {
                     _state.update { it.copy(isEnded = true, isPlaying = false) }
                 }
@@ -314,24 +313,28 @@ class MpvEngineImpl(
         eventProperty(property)
     }
 
+    override fun eventProperty(property: String, value: Double) {
+        eventProperty(property)
+    }
+
     override fun event(eventId: Int) {
         // MPV event handling
     }
 
     private fun refreshTracks() {
-        val trackCount = MPVLib.getPropertyInt("track-list/count") ?: 0
+        val trackCount = mpv?.getPropertyInt("track-list/count") ?: 0
         val audioList = mutableListOf<TrackInfo>()
         val subList = mutableListOf<TrackInfo>()
         var currentAid: String? = null
         var currentSid: String? = null
 
         for (i in 0 until trackCount) {
-            val type = MPVLib.getPropertyString("track-list/$i/type") ?: continue
-            val id = MPVLib.getPropertyString("track-list/$i/id") ?: "$i"
-            val title = MPVLib.getPropertyString("track-list/$i/title")
-            val lang = MPVLib.getPropertyString("track-list/$i/lang")
-            val codec = MPVLib.getPropertyString("track-list/$i/codec")
-            val selected = MPVLib.getPropertyBoolean("track-list/$i/selected") ?: false
+            val type = mpv?.getPropertyString("track-list/$i/type") ?: continue
+            val id = mpv?.getPropertyString("track-list/$i/id") ?: "$i"
+            val title = mpv?.getPropertyString("track-list/$i/title")
+            val lang = mpv?.getPropertyString("track-list/$i/lang")
+            val codec = mpv?.getPropertyString("track-list/$i/codec")
+            val selected = mpv?.getPropertyBoolean("track-list/$i/selected") ?: false
 
             val displayName = title ?: lang ?: "${type.replaceFirstChar { it.uppercase() }} #$id"
 
@@ -377,8 +380,8 @@ class MpvEngineImpl(
         progressJob = scope.launch(Dispatchers.Main) {
             while (isActive) {
                 if (isInitialized) {
-                    val posSec = MPVLib.getPropertyDouble("time-pos") ?: 0.0
-                    val durSec = MPVLib.getPropertyDouble("duration") ?: 0.0
+                    val posSec = mpv?.getPropertyDouble("time-pos") ?: 0.0
+                    val durSec = mpv?.getPropertyDouble("duration") ?: 0.0
                     _state.update {
                         it.copy(
                             currentPositionMs = (posSec * 1000).toLong().coerceAtLeast(0L),
@@ -400,10 +403,11 @@ class MpvEngineImpl(
         stopProgressTracker()
         if (isInitialized) {
             runCatching {
-                MPVLib.removeObserver(this)
-                MPVLib.destroy()
+                mpv?.removeObserver(this)
+                mpv?.destroy()
             }
             isInitialized = false
+            mpv = null
         }
         attachedSurfaceView = null
     }
