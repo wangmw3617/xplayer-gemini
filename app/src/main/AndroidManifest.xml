@@ -32,7 +32,7 @@
         android:theme="@style/Theme.XPlayer"
         android:requestLegacyExternalStorage="true"
         android:usesCleartextTraffic="true"
-        tools:targetApi="35">
+        tools:targetApi="36">
 
         <activity
             android:name=".MainActivity"
