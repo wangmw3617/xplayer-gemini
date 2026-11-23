@@ -30,7 +30,6 @@ import com.xplayer.app.data.source.MediaSource
 import com.xplayer.app.player.model.AspectRatioMode
 import com.xplayer.app.player.model.PlayerUiState
 import com.xplayer.app.player.model.TrackInfo
-import io.github.anilbeesetti.nextlib.media3ext.ffdecoder.NextRenderersFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -66,7 +65,7 @@ class Media3EngineImpl(
     }
 
     private fun initPlayer() {
-        val renderersFactory = NextRenderersFactory(context)
+        val renderersFactory = DefaultRenderersFactory(context)
             .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER)
             .setEnableDecoderFallback(true)
 

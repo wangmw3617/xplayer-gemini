@@ -12,7 +12,6 @@ datastore = "1.1.7"
 coroutines = "1.11.0"
 coil = "2.7.0"
 media3 = "1.11.1"
-nextlib = "1.11.1-0.16.0"
 libmpv = "1.0.0"
 
 [libraries]
@@ -52,7 +51,6 @@ androidx-media3-exoplayer = { group = "androidx.media3", name = "media3-exoplaye
 androidx-media3-exoplayer-hls = { group = "androidx.media3", name = "media3-exoplayer-hls", version.ref = "media3" }
 androidx-media3-session = { group = "androidx.media3", name = "media3-session", version.ref = "media3" }
 androidx-media3-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "media3" }
-nextlib-media3ext = { group = "io.github.anilbeesetti", name = "nextlib-media3ext", version.ref = "nextlib" }
 
 # libmpv Android (dev.jdtech.mpv:libmpv AAR)
 libmpv = { module = "dev.jdtech.mpv:libmpv", version.ref = "libmpv" }

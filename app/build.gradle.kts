@@ -138,8 +138,6 @@ dependencies {
     implementation(libs.androidx.media3.session)
     implementation(libs.androidx.media3.ui)
 
-    // NextLib Media3 FFmpeg Extensions
-    implementation(libs.nextlib.media3ext)
 
     // libmpv for Android
     implementation(libs.libmpv)
